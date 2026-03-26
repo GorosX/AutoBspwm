@@ -1,0 +1,139 @@
+# ── WM Control ───────────────────────────────────────────────────────────────
+
+super + alt + r
+	bspc wm -r
+
+super + Escape
+	pkill -USR1 -x sxhkd
+
+# ── Terminal y lanzadores ────────────────────────────────────────────────────
+
+super + Return
+	kitty
+
+super + d
+	rofi -show drun
+
+# ── Cerrar ventana ───────────────────────────────────────────────────────────
+
+super + w
+	bspc node -c
+
+super + shift + w
+	bspc node -k
+
+# ── Escritorios ──────────────────────────────────────────────────────────────
+
+super + {1-9,0}
+	bspc desktop -f '^{1-9,10}'
+
+super + shift + {1-9,0}
+	bspc node -d '^{1-9,10}' --follow
+
+# ── Navegación entre ventanas ────────────────────────────────────────────────
+
+super + {Left,Down,Up,Right}
+	bspc node -f {west,south,north,east}
+
+super + {h,j,k,l}
+	bspc node -f {west,south,north,east}
+
+# ── Redimensionar ventanas ───────────────────────────────────────────────────
+
+# super + alt + flechas → hacer ventana MÁS GRANDE
+super + alt + {Left,Down,Up,Right}
+	bspc node -z {left -20 0,bottom 0 20,top 0 -20,right 20 0}
+
+# super + alt + shift + flechas → hacer ventana MÁS PEQUEÑA
+super + alt + shift + {Left,Down,Up,Right}
+	bspc node -z {right -20 0,top 0 20,bottom 0 -20,left 20 0}; \
+	bspc node -z {left 20 0,bottom 0 -20,top 0 20,right -20 0}
+
+# ── Mover ventana (swap) ────────────────────────────────────────────────────
+
+super + ctrl + {Left,Down,Up,Right}
+	bspc node -s {west,south,north,east}
+
+super + ctrl + {h,j,k,l}
+	bspc node -s {west,south,north,east}
+
+# ── Layout ───────────────────────────────────────────────────────────────────
+
+super + m
+	bspc desktop -l next
+
+super + space
+	bspc node -t '~floating'
+
+super + f
+	bspc node -t '~fullscreen'
+
+super + t
+	bspc node -t tiled
+
+# ── Preselección ─────────────────────────────────────────────────────────────
+
+super + ctrl + alt + {Left,Down,Up,Right}
+	bspc node -p {west,south,north,east}
+
+super + ctrl + alt + space
+	bspc node -p cancel
+
+# ── Screenshot ───────────────────────────────────────────────────────────────
+
+Print
+	flameshot gui
+
+# ── OSCP Shortcuts ───────────────────────────────────────────────────────────
+
+# Terminal en ~/oscp-tools
+super + shift + t
+	kitty --directory ~/oscp-tools
+
+# Copiar IP de tun0 al clipboard
+super + shift + i
+	ip -4 addr show tun0 2>/dev/null | grep -oP '(?<=inet\s)\d+(\.\d+){3}' | tr -d '\n' | xclip -selection clipboard && notify-send "IP copiada" "$(xclip -selection clipboard -o)"
+
+# HTTP server
+super + shift + s
+	kitty -e bash -c 'cd ~/oscp-tools/www && echo "[*] HTTP Server :80" && sudo python3 -m http.server 80'
+
+# Listener netcat
+super + shift + n
+	kitty -e bash -c 'echo "[*] Listener :4444" && rlwrap nc -nlvp 4444'
+
+# Terminal como root
+super + shift + Return
+	kitty -e sudo su
+
+# Firefox
+super + shift + f
+	firefox
+
+# Burp Suite
+super + shift + b
+	burpsuite
+
+# Rofi cheatsheet — buscar comandos OSCP
+super + shift + c
+	$HOME/Scripts/rofi-cheatsheet.sh
+
+# Power menu (apagar, reiniciar, cerrar sesión, bloquear)
+super + x
+	$HOME/Scripts/rofi-powermenu.sh
+
+# Exam timer toggle (start/stop)
+super + shift + e
+	$HOME/.config/polybar/scripts/exam_timer.sh toggle
+
+# Exam timer reset
+super + shift + alt + e
+	$HOME/.config/polybar/scripts/exam_timer.sh reset
+
+# Hackspace (tmux layout de hacking)
+super + shift + h
+	kitty -e $HOME/Scripts/hackspace.sh
+
+# Clipboard sync status
+super + shift + v
+	notify-send "Clipboard" "$($HOME/Scripts/clipboard-sync.sh status 2>&1)"
