@@ -175,6 +175,15 @@ autobspwm-oscp/
 - **VPN**: Guarda los `.ovpn` en `~/vpn/` con nombres que contengan `htb`/`hackthebox` u `offsec`/`pen-200`
 - **Target**: `settarget 10.10.10.5 MiMáquina` lo muestra en polybar
 
+## Screenshots
+
+### Entorno completo
+
+Vista general del escritorio con BSPWM: polybar mostrando el target activo, exam timer y estado VPN. A la izquierda `scopegen examen` generando la estructura de directorios del examen OSCP con `tree`. Arriba a la derecha `portfwd` con el menú interactivo de túneles. Abajo `settarget` seteando el target en polybar y `fastfetch` con la info del sistema.
+
+![desktop](<img width="1919" height="1079" alt="imagen" src="https://github.com/user-attachments/assets/92fa5daa-b65a-46eb-b0e3-eb3b454cbd15" />
+)
+
 ## License
 
 MIT License — usa, modifica y comparte libremente.
